@@ -20,8 +20,9 @@
 POST http://localhost:8400/manager/batch/import
 Accept: */*
 Content-Type: multipart/form-data
+#Content-Type: application/json
 Cache-Control: no-cache
 
-< ./files/batch-import.json
+#< E:\proj_2021.1\iot-dc3\dc3\api\files\batch-import-virtual-template.json
 # 请使用 postman 进行测试 key=file,value=./files/batch-import.json
 ###
