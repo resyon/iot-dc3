@@ -1,0 +1,3 @@
+[submodule "dc3-web"]
+	path = dc3-web
+	url = https://gitee.com/resyon/iot-dc3.git
