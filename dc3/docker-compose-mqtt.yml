@@ -1,0 +1,224 @@
+#
+#  Copyright 2018-2020 Pnoker. All Rights Reserved.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+
+version: '3'
+
+services:
+
+  register:
+    build:
+      context: ../dc3-center/dc3-register/
+      dockerfile: ./Dockerfile
+    image: pnoker/dc3-register:1.0.0
+    restart: always
+    ports:
+      - 8100:8100
+    container_name: dc3-register
+    hostname: dc3-register
+    volumes:
+      - logs:/dc3-center/dc3-register/dc3/logs
+    networks:
+      dc3net:
+        aliases:
+          - dc3-register
+
+  auth:
+    build:
+      context: ../dc3-center/dc3-auth/
+      dockerfile: ./Dockerfile
+    image: pnoker/dc3-auth:1.0.0
+    restart: always
+    ports:
+      - 8300:8300
+    container_name: dc3-auth
+    hostname: dc3-auth
+    volumes:
+      - logs:/dc3-center/dc3-auth/dc3/logs
+    networks:
+      dc3net:
+        aliases:
+          - dc3-auth
+
+  monitor:
+    build:
+      context: ../dc3-center/dc3-monitor/
+      dockerfile: ./Dockerfile
+    image: pnoker/dc3-monitor:1.0.0
+    restart: always
+    ports:
+      - 8200:8200
+    container_name: dc3-monitor
+    hostname: dc3-monitor
+    volumes:
+      - logs:/dc3-center/dc3-monitor/dc3/logs
+    networks:
+      dc3net:
+        aliases:
+          - dc3-monitor
+
+  web:
+     build:
+       context: ../dc3-web
+       dockerfile: ./Dockerfile 
+     image: ponker/dc3-web:1.0.0
+     restart: always
+     ports:
+       - 443:443
+     container_name: dc3-web
+     hostname: dc3-web
+     networks:
+       dc3net:
+         aliases:
+           - dc3-web
+
+
+  manager:
+    build:
+      context: ../dc3-center/dc3-manager/
+      dockerfile: ./Dockerfile
+    image: pnoker/dc3-manager:1.0.0
+    restart: always
+    ports:
+      - 8400:8400
+    container_name: dc3-manager
+    hostname: dc3-manager
+    volumes:
+      - logs:/dc3-center/dc3-manager/dc3/logs
+    networks:
+      dc3net:
+        aliases:
+          - dc3-manager
+
+  data:
+    build:
+      context: ../dc3-center/dc3-data/
+      dockerfile: ./Dockerfile
+    image: pnoker/dc3-data:1.0.0
+    restart: always
+    ports:
+      - 8500:8500
+    container_name: dc3-data
+    hostname: dc3-data
+    volumes:
+      - logs:/dc3-center/dc3-data/dc3/logs
+    networks:
+      dc3net:
+        aliases:
+          - dc3-data
+
+  mysql:
+    build:
+      context: ./dependencies/mysql/
+      dockerfile: ./Dockerfile
+    image: pnoker/dc3-mysql:1.0.0
+    restart: always
+    ports:
+      - 3306:3306
+    container_name: dc3-mysql
+    hostname: dc3-mysql
+    volumes:
+      - mysql:/var/lib/mysql
+    networks:
+      dc3net:
+        aliases:
+          - dc3-mysql
+
+  mongo:
+    build:
+      context: ./dependencies/mongo/
+      dockerfile: ./Dockerfile
+    image: pnoker/dc3-mongo:1.0.0
+    restart: always
+    ports:
+      - 27017:27017
+    container_name: dc3-mongo
+    hostname: dc3-mongo
+    volumes:
+      - mongo_config:/data/configdb
+      - mongo_db:/data/db
+    networks:
+      dc3net:
+        aliases:
+          - dc3-mongo
+
+  mqtt:
+    build:
+      context: ../dc3-driver/dc3-driver-mqtt/
+      dockerfile: ./Dockerfile
+    image: pnoker/dc3-driver-mqtt:1.0.0
+    restart: always
+    ports:
+      - 8701:8701
+    container_name: dc3-driver-mqtt
+    hostname: dc3-driver-mqtt
+    volumes:
+      - logs:/dc3-driver/dc3-driver-mqtt/dc3/logs
+    networks:
+      dc3net:
+        aliases:
+          - dc3-driver-mqtt
+
+  redis:
+    build:
+      context: ./dependencies/redis/
+      dockerfile: ./Dockerfile
+    image: pnoker/dc3-redis:1.0.0
+    restart: always
+    ports:
+      - 6379:6379
+    container_name: dc3-redis
+    hostname: dc3-redis
+    volumes:
+      - redis:/data
+    networks:
+      dc3net:
+        aliases:
+          - dc3-redis
+
+  rabbitmq:
+    build:
+      context: ./dependencies/rabbitmq/
+      dockerfile: ./Dockerfile
+    image: pnoker/dc3-rabbitmq:1.0.0
+    restart: always
+    ports:
+      - 5672:5672
+      - 1883:1883
+      - 61613:61613
+      - 15672:15672
+    container_name: dc3-rabbitmq
+    hostname: dc3-rabbitmq
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+    networks:
+      dc3net:
+        aliases:
+          - dc3-rabbitmq
+
+
+        
+volumes:
+  logs:
+  mysql:
+  mongo_config:
+  mongo_db:
+  redis:
+  rabbitmq:
+
+networks:
+  dc3net:
+    driver: 'bridge'
+...

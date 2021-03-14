@@ -1,6 +1,6 @@
 driver:
   name: MqttDriver
-  description: @project.description@
+  description: mqtt
   schedule:
     read:
       enable: false
