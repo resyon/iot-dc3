@@ -40,7 +40,9 @@
 
         <module>dc3-api</module>
         <module>dc3-common</module>
-        <module>demo-app</module>
+
+<!--        <module>demo-app</module>-->
+
     </modules>
 
     <properties>

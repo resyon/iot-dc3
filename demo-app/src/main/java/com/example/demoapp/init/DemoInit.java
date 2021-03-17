@@ -84,7 +84,7 @@ public class DemoInit implements ApplicationRunner {
     static String subTopic = "cmd/";
     static int qos = 0;
     static String broker = "tcp://dc3-rabbitmq:1883";
-    private static final String NAME = "java-demo-app-24" ;
+    private static final String NAME = "java-demo-app-30" ;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -144,24 +144,28 @@ public class DemoInit implements ApplicationRunner {
             //绑定位点与设备
             pointInfoClient.add(new PointInfo().setPointId(pointQOS.getId()).setValue("0").
                     setDeviceId(demoMQTT.getDevice().getId()).setPointAttributeId(pointAttributeQOS.getId()));
+            pointInfoClient.add(new PointInfo().setPointId(topicQOS.getId()).setValue(subTopic).
+                    setDeviceId(demoMQTT.getDevice().getId()).setPointAttributeId(pointAttributeTopic.getId()));
         }
 
        new Thread( ()->{
-            try {
-                DevicePayLoad devicePayLoad = new DevicePayLoad().setDeviceId(demoMQTT.getDevice().getId())
-                        .setPointId(pointQOS.getId()).setValue(String.valueOf(System.currentTimeMillis() & 0xffffff));
-                String tpc = pubTopic + demoMQTT.getDevice().getId();
-                ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-                String json = ow.writeValueAsString(devicePayLoad);
-                demoMQTT.getMqttClient().publish(tpc,
-                        json.getBytes(),0, false );
+           while(true) {
+               try {
+                   DevicePayLoad devicePayLoad = new DevicePayLoad().setDeviceId(demoMQTT.getDevice().getId())
+                           .setPointId(pointQOS.getId()).setValue(String.valueOf(((long) (Math.random() * System.currentTimeMillis())) & 0xffffff));
+                   String tpc = pubTopic + demoMQTT.getDevice().getId();
+                   ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+                   String json = ow.writeValueAsString(devicePayLoad);
+                   demoMQTT.getMqttClient().publish(tpc,
+                           json.getBytes(), 0, false);
 
-                log.info(tpc);
-                log.info(json);
+                   log.info(tpc);
+                   log.info(json);
 
-               Thread.sleep(500);
-           } catch (Exception e) {
-               e.printStackTrace();
+                   Thread.sleep(500);
+               } catch (Exception e) {
+                   e.printStackTrace();
+               }
            }
        }).start();
 
@@ -191,6 +195,7 @@ public class DemoInit implements ApplicationRunner {
 //                driverCommandApi.writePoint(cmdParameters);
                 break;
             }
+            Thread.sleep(500);
         }while (true);
 
     }
